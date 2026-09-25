@@ -9,6 +9,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api import analyze
 from app.core import config
 from app.core.exceptions import AIParseError, AIProviderError
 
@@ -66,3 +67,7 @@ app.add_middleware(
 async def health_check() -> dict:
     """Health check endpoint. Returns OK when the server is running."""
     return {"status": "ok"}
+
+
+# Register the analyze route (POST /api/v1/analyze).
+app.include_router(analyze.router)
