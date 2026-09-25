@@ -1,0 +1,38 @@
+.panel {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.relevant {
+  background: #2e7d32; /* green */
+}
+
+.notRelevant {
+  background: #757575; /* neutral grey */
+}
+
+.needsReview {
+  background: #f9a825; /* amber */
+  color: #000;
+}
+
+.reason {
+  margin-top: 0.5rem;
+}
+
+.advisory {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #444;
+}

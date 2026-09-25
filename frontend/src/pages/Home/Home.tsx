@@ -13,6 +13,7 @@ import {
   MAX_LENGTH,
   MIN_LENGTH,
 } from "../../components/AnnouncementInput/AnnouncementInput";
+import { PersonalizedDecisionSummary } from "../../components/PersonalizedDecisionSummary/PersonalizedDecisionSummary";
 import { StudentProfileForm } from "../../components/StudentProfileForm/StudentProfileForm";
 import { analyzeAnnouncement } from "../../services/api";
 import type {
@@ -120,8 +121,6 @@ function Home() {
         </section>
 
         <section className={styles.section} aria-label="Analysis results">
-          {/* Detailed result components (decision summary, checklist, etc.)
-              are added in T-22+. This is a lightweight placeholder. */}
           <h2>Results</h2>
           {isLoading && <p>Analysing…</p>}
           {error && (
@@ -129,8 +128,17 @@ function Home() {
               {error}
             </p>
           )}
-          {result && <p>Analysis ready.</p>}
-          {checklist.length > 0 && <p>{checklist.length} checklist item(s).</p>}
+          {result && (
+            <>
+              {/* Decision summary sits at the TOP of the results (FR-15).
+                  Further result sections (deadlines, priority, checklist)
+                  are added in T-23+. */}
+              <PersonalizedDecisionSummary relevance={result.relevance} />
+              {checklist.length > 0 && (
+                <p>{checklist.length} checklist item(s).</p>
+              )}
+            </>
+          )}
         </section>
       </main>
     </div>
