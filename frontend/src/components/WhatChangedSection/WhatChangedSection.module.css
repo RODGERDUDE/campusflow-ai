@@ -1,0 +1,12 @@
+.section {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.value {
+  margin: 0 0 0.75rem;
+}
