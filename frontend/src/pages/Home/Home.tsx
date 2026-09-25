@@ -1,12 +1,14 @@
 // CampusFlow AI — Home page.
 //
 // The main single-page layout: a profile sidebar plus a main announcement area
-// with placeholder sections for the profile form, announcement input, and
-// results (design §15, §16). This is the skeleton only — state variables are
-// declared here, but no behavior (handlers, API calls) is wired up yet.
+// with placeholder sections for the announcement input and results
+// (design §15, §16). The student profile form (T-18) is wired in here: the
+// profile is loaded from localStorage on page load and kept in Home state so it
+// is ready to be passed to analyzeAnnouncement() on submission (T-21).
 
 import { useState } from "react";
 
+import { StudentProfileForm } from "../../components/StudentProfileForm/StudentProfileForm";
 import type {
   AnalyzeResponse,
   ChecklistItem,
@@ -14,9 +16,22 @@ import type {
 } from "../../types";
 import styles from "./Home.module.css";
 
+const STORAGE_KEY = "campusflow_profile";
+
+// Read a previously saved profile from localStorage (frontend-only, no auth).
+function loadSavedProfile(): StudentProfile | null {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return null;
+  try {
+    return JSON.parse(saved) as StudentProfile;
+  } catch {
+    return null;
+  }
+}
+
 function Home() {
-  // Student profile (loaded/edited later; null until provided).
-  const [profile] = useState<StudentProfile | null>(null);
+  // Student profile — initialised from localStorage on page load.
+  const [profile, setProfile] = useState<StudentProfile | null>(loadSavedProfile);
   // Raw announcement text pasted by the student.
   const [announcementText] = useState<string>("");
   // Whether an analysis request is in flight.
@@ -28,13 +43,22 @@ function Home() {
   // Checklist items with frontend-only completion state.
   const [checklist] = useState<ChecklistItem[]>([]);
 
+  // Keep Home's profile state in sync when the form reports a valid profile.
+  function handleProfileChange(nextProfile: StudentProfile) {
+    setProfile(nextProfile);
+  }
+
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
         <section className={styles.section} aria-label="Student profile">
-          {/* Placeholder: StudentProfileForm (T-18) */}
           <h2>Your Profile</h2>
-          <p>{profile ? profile.name : "No profile saved yet."}</p>
+          <StudentProfileForm onProfileChange={handleProfileChange} />
+          <p>
+            {profile
+              ? `Saved profile: ${profile.name}`
+              : "No profile saved yet."}
+          </p>
         </section>
       </aside>
 
@@ -42,7 +66,11 @@ function Home() {
         <section className={styles.section} aria-label="Announcement input">
           {/* Placeholder: AnnouncementInput (T-20) */}
           <h2>Announcement</h2>
-          <p>{announcementText ? "Announcement entered." : "Paste an announcement to begin."}</p>
+          <p>
+            {announcementText
+              ? "Announcement entered."
+              : "Paste an announcement to begin."}
+          </p>
         </section>
 
         <section className={styles.section} aria-label="Analysis results">
