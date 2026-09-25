@@ -14,21 +14,24 @@ import styles from "./PersonalizedDecisionSummary.module.css";
 //   UNCERTAIN     -> "NEEDS REVIEW"
 const DISPLAY: Record<
   RelevanceStatus,
-  { label: string; badgeClass: string; advisory?: string }
+  { label: string; badgeClass: string; panelClass: string; advisory?: string }
 > = {
   RELEVANT: {
     label: "RELEVANT",
     badgeClass: styles.relevant,
+    panelClass: styles.panelRelevant,
   },
   NOT_RELEVANT: {
     label: "NOT RELEVANT",
     badgeClass: styles.notRelevant,
+    panelClass: styles.panelNotRelevant,
     advisory:
       "This announcement does not apply to your profile. No action is required from you.",
   },
   UNCERTAIN: {
     label: "NEEDS REVIEW",
     badgeClass: styles.needsReview,
+    panelClass: styles.panelNeedsReview,
     advisory:
       "We could not determine whether this applies to you. Please verify with your department or faculty office before taking any action.",
   },
@@ -44,7 +47,10 @@ export function PersonalizedDecisionSummary({
   const display = DISPLAY[relevance.relevance_status];
 
   return (
-    <div className={styles.panel} aria-label="Decision summary">
+    <div
+      className={`${styles.panel} ${display.panelClass}`}
+      aria-label="Decision summary"
+    >
       <span className={`${styles.badge} ${display.badgeClass}`}>
         {display.label}
       </span>
