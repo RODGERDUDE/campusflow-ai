@@ -132,7 +132,12 @@ function Home() {
             onChange={setAnnouncementText}
             disabled={isLoading}
           />
-          <button type="button" onClick={handleSubmit} disabled={isLoading}>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            aria-label="Analyse announcement"
+          >
             {isLoading ? "Analysing…" : "Analyse announcement"}
           </button>
         </section>

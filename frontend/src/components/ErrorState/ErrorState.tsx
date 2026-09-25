@@ -16,7 +16,12 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
     <div className={styles.wrapper} role="alert">
       <p className={styles.message}>{message}</p>
-      <button type="button" className={styles.button} onClick={onRetry}>
+      <button
+        type="button"
+        className={styles.button}
+        onClick={onRetry}
+        aria-label="Try analysing the announcement again"
+      >
         Try Again
       </button>
     </div>

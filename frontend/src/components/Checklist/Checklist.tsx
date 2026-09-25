@@ -32,6 +32,7 @@ export function Checklist({ items, onToggle }: ChecklistProps) {
               id={`checklist-${item.id}`}
               checked={item.completed}
               onChange={() => onToggle(item.id)}
+              aria-label={`Mark "${item.description}" as ${item.completed ? "incomplete" : "complete"}`}
             />
             <label htmlFor={`checklist-${item.id}`}>
               <span className={styles.description}>{item.description}</span>
