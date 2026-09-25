@@ -1,0 +1,31 @@
+.wrapper {
+  margin-bottom: 1.25rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.high {
+  background: #c62828; /* red */
+}
+
+.medium {
+  background: #f9a825; /* amber */
+  color: #000;
+}
+
+.low {
+  background: #2e7d32; /* green */
+}
+
+.reason {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #444;
+}
