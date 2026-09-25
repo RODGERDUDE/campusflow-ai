@@ -1,0 +1,21 @@
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  align-items: flex-start;
+}
+
+.sidebar {
+  flex: 1 1 260px;
+  min-width: 240px;
+}
+
+.main {
+  flex: 2 1 480px;
+  min-width: 320px;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}

@@ -1,5 +1,7 @@
+import Home from "./pages/Home/Home";
+
 function App() {
-  return <div>CampusFlow AI</div>
+  return <Home />;
 }
 
-export default App
+export default App;
