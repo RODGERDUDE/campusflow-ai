@@ -15,6 +15,8 @@ import {
 } from "../../components/AnnouncementInput/AnnouncementInput";
 import { Checklist } from "../../components/Checklist/Checklist";
 import { DeadlineSection } from "../../components/DeadlineSection/DeadlineSection";
+import { ErrorState } from "../../components/ErrorState/ErrorState";
+import { LoadingState } from "../../components/LoadingState/LoadingState";
 import { PersonalizedDecisionSummary } from "../../components/PersonalizedDecisionSummary/PersonalizedDecisionSummary";
 import { PriorityDisplay } from "../../components/PriorityDisplay/PriorityDisplay";
 import { StudentProfileForm } from "../../components/StudentProfileForm/StudentProfileForm";
@@ -137,14 +139,16 @@ function Home() {
 
         <section className={styles.section} aria-label="Analysis results">
           <h2>Results</h2>
-          {isLoading && <p>Analysing…</p>}
-          {error && (
-            <p className={styles.error} role="alert">
-              {error}
-            </p>
+          {/* While loading, show only the loading indicator (results hidden). */}
+          {isLoading && <LoadingState />}
+          {/* On error (and not loading), show the retryable error state.
+              "Try Again" reuses the existing submit controller, which
+              re-validates and clears the error on a valid attempt. */}
+          {!isLoading && error && (
+            <ErrorState message={error} onRetry={handleSubmit} />
           )}
-          {/* Results are hidden while a request is in flight. */}
-          {!isLoading && result && (
+          {/* Results are hidden while loading or when an error is showing. */}
+          {!isLoading && !error && result && (
             <>
               {/* PersonalizedDecisionSummary is always first (FR-15). */}
               <PersonalizedDecisionSummary relevance={result.relevance} />
