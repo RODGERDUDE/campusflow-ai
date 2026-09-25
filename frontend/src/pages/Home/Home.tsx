@@ -3,8 +3,8 @@
 // The main single-page layout: a profile sidebar plus a main announcement area
 // (design §15, §16). This page owns all analysis state and the submit
 // controller (T-21): it validates inputs, calls the backend API service
-// (never Gemini directly), and manages loading/error/result state. The detailed
-// result components (decision summary, checklist, etc.) arrive in T-22+.
+// (never Gemini directly), and manages loading/error/result state. It also
+// assembles the full results view (T-26) with relevance-specific rendering.
 
 import { useState } from "react";
 
@@ -13,8 +13,12 @@ import {
   MAX_LENGTH,
   MIN_LENGTH,
 } from "../../components/AnnouncementInput/AnnouncementInput";
+import { Checklist } from "../../components/Checklist/Checklist";
+import { DeadlineSection } from "../../components/DeadlineSection/DeadlineSection";
 import { PersonalizedDecisionSummary } from "../../components/PersonalizedDecisionSummary/PersonalizedDecisionSummary";
+import { PriorityDisplay } from "../../components/PriorityDisplay/PriorityDisplay";
 import { StudentProfileForm } from "../../components/StudentProfileForm/StudentProfileForm";
+import { WhatChangedSection } from "../../components/WhatChangedSection/WhatChangedSection";
 import { analyzeAnnouncement } from "../../services/api";
 import type {
   AnalyzeResponse,
@@ -94,6 +98,17 @@ function Home() {
     }
   }
 
+  // Toggle a checklist item's completed flag in frontend state only (design
+  // §10.2). All other item fields are preserved and nothing is sent to the
+  // backend.
+  function toggleItem(id: string) {
+    setChecklist((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item,
+      ),
+    );
+  }
+
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
@@ -128,14 +143,29 @@ function Home() {
               {error}
             </p>
           )}
-          {result && (
+          {/* Results are hidden while a request is in flight. */}
+          {!isLoading && result && (
             <>
-              {/* Decision summary sits at the TOP of the results (FR-15).
-                  Further result sections (deadlines, priority, checklist)
-                  are added in T-23+. */}
+              {/* PersonalizedDecisionSummary is always first (FR-15). */}
               <PersonalizedDecisionSummary relevance={result.relevance} />
-              {checklist.length > 0 && (
-                <p>{checklist.length} checklist item(s).</p>
+              <WhatChangedSection
+                summary={result.analysis.summary}
+                whatChanged={result.analysis.what_changed}
+              />
+              <DeadlineSection
+                deadlines={result.analysis.deadlines}
+                showAsObligations={
+                  result.relevance.relevance_status === "RELEVANT"
+                }
+              />
+              {result.relevance.relevance_status === "RELEVANT" && (
+                <>
+                  <PriorityDisplay
+                    priority={result.analysis.priority}
+                    priorityReason={result.analysis.priority_reason}
+                  />
+                  <Checklist items={checklist} onToggle={toggleItem} />
+                </>
               )}
             </>
           )}
