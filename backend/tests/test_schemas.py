@@ -166,3 +166,61 @@ def test_mixed_all_list_rejected():
 def test_invalid_priority_rejected():
     with pytest.raises(ValidationError):
         AIExtractionResult(**make_extraction(priority="Critical"))
+
+
+# --- Regression: omitted dimension is unrestricted (["all"]), not ambiguous --
+#
+# "All second-year CSE students specializing in AI must register." mentions
+# department, year, and specialization but says nothing about section. The
+# section dimension is therefore unrestricted (["all"]) — NOT [] — and the
+# extraction must validate with empty ambiguous_dimensions.
+
+
+def test_omitted_section_dimension_all_validates():
+    model = AIExtractionResult(
+        **make_extraction(
+            affected_groups={
+                "departments": ["CSE"],
+                "specializations": ["AI"],
+                "years": [2],
+                "sections": ["all"],
+            },
+            ambiguous_dimensions=[],
+            ambiguous_raw_text={},
+        )
+    )
+    assert model.affected_groups.sections == ["all"]
+    assert model.ambiguous_dimensions == []
+
+
+def test_omitted_section_is_relevant_for_matching_student():
+    from app.schemas.request import StudentProfile
+    from app.schemas.response import RelevanceStatusEnum
+    from app.services import relevance_service
+
+    extraction = AIExtractionResult(
+        **make_extraction(
+            affected_groups={
+                "departments": ["CSE"],
+                "specializations": ["AI"],
+                "years": [2],
+                "sections": ["all"],
+            },
+        )
+    )
+    profile = StudentProfile(
+        name="Ananya", department="CSE", specialization="AI", year=2, section="A"
+    )
+    result = relevance_service.compute(extraction, profile)
+    # Section is unrestricted, other dimensions match -> RELEVANT (not UNCERTAIN).
+    assert result.relevance_status == RelevanceStatusEnum.RELEVANT
+
+
+def test_system_prompt_instructs_all_for_unmentioned_dimensions():
+    from app.services.prompt_builder import SYSTEM_PROMPT
+
+    lowered = SYSTEM_PROMPT.lower()
+    # The prompt must tell the model to use ["all"] when a dimension is not
+    # mentioned/restricted, and reserve [] for genuinely ambiguous wording.
+    assert "not mention or restrict" in lowered
+    assert "not ambiguous" in lowered

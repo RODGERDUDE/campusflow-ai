@@ -18,14 +18,28 @@ RULES:
 3. All required fields must be present. Do not omit any field.
 
 AFFECTED_GROUPS RULES:
-- Use ["all"] ONLY when the announcement EXPLICITLY states no restriction on a
-  dimension (e.g., "all students", "the entire college").
-- Use [] for a dimension when you CANNOT reliably determine the target group
-  without guessing. Add the dimension name to ambiguous_dimensions and record
-  the original wording in ambiguous_raw_text.
-- Do NOT use ["all"] as a fallback when the group is unclear.
-- Do NOT invent specific values. If you cannot determine the year, do not guess
-  [3, 4] — use [] instead.
+Each dimension (departments, specializations, years, sections) MUST be one of:
+  (a) a specific list — the announcement explicitly targets these values;
+  (b) ["all"] — the announcement does NOT restrict this dimension; or
+  (c) [] — the wording about this dimension is genuinely AMBIGUOUS.
+
+- Use ["all"] when the announcement does NOT mention or restrict a dimension at
+  all. If a notice targets some dimensions but simply says nothing about another
+  dimension, that other dimension is unrestricted → ["all"] (NOT []).
+  Example: "All second-year CSE students specializing in AI must register."
+    departments: ["CSE"], specializations: ["AI"], years: [2],
+    sections: ["all"]   ← sections not mentioned, so unrestricted
+    ambiguous_dimensions: []
+  Also use ["all"] when the announcement explicitly states no restriction
+  (e.g., "all students", "the entire college").
+- Use [] ONLY when the announcement DOES refer to a dimension but with wording
+  that cannot be reliably mapped without guessing. When you use [], add that
+  dimension name to ambiguous_dimensions and record the original wording in
+  ambiguous_raw_text.
+- A dimension that is simply not mentioned is NOT ambiguous — it is ["all"].
+  Reserve [] for genuinely unclear wording, not for absence of mention.
+- Do NOT invent specific values. If the announcement says "senior students" but
+  does not define which years, do not guess [3, 4] — use [] (ambiguous).
 - years values must be integers (1, 2, 3, or 4). Not strings.
 
 DATE RULES:
